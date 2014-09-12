@@ -1,39 +1,44 @@
 # This is pretty dangerous in a bunch of ways.  Approach with caution.
-d=/afs/athena.mit.edu/system/athena10/installer/stage1
+DESTDIR=/afs/athena.mit.edu/system/athena10/installer/$(SUITE)
+
+# You only want to change these if testing something.
 SERVERIP=18.9.60.73
-INSTALLER=stage1
+SUITE=stage1
+
+# Where, within the tarball, the binaries go.
+LIBEXECDIR=debathena/lib
 
 default:
 	: Use "make install" to move this from where the installer will fetch it.
 
-install: host kexec ${d}/debathena.tar.gz
+install: $(DESTDIR) $(DESTDIR)/debathena.tar.gz
 
-kexec: kexec/kexec
-	mkdir -p debathena/lib
-	install -m 755 kexec/kexec debathena/lib
+$(DESTDIR):
+	$(error $(DESTDIR) does not exist)
 
-host: host.amd64 host.i386
-	mkdir -p debathena/lib
-	install -m 755 host.amd64 debathena/lib
-	install -m 755 host.i386 debathena/lib
+host.amd64 host.i386: host/host.c
+	gcc $(if $(subst .amd64,,$(suffix $@)),-m32,-m64) -static $< -lcares -o $@
 
-host.amd64: host/host.c
-	gcc -m64 -static host/host.c -lcares -o $@
-
-host.i386: host/host.c
-	gcc -m32 -static host/host.c -lcares -o $@
+$(LIBEXECDIR): host.amd64 host.i386 kexec/kexec
+	mkdir -p $@
+	install -m 755 $^ $@
 
 debathena.preseed:
-	@echo "d-i preseed/include_command string wget -q http://$(SERVERIP)/installer/$(INSTALLER)/debathena-loader.sh ; sh debathena-loader.sh" > $@
+	@echo "d-i preseed/include_command string wget -q http://$(SERVERIP)/installer/$(SUITE)/debathena-loader.sh ; sh debathena-loader.sh" > $@
 
-${d}/debathena.tar.gz: debathena.preseed debathena-loader.sh debathena
+$(DESTDIR)/debathena.tar.gz: debathena.preseed debathena-loader.sh debathena $(LIBEXECDIR)
+	test -w "$(DESTDIR)"
 	git rev-parse --short HEAD > debathena/version
-	tar czvf ${d}/debathena.tar.gz --exclude "*~" debathena
-	cp debathena.preseed debathena-loader.sh ${d}
+	tar czvf $(DESTDIR)/debathena.tar.gz --exclude "*~" debathena
+	cp debathena.preseed debathena-loader.sh $(DESTDIR)
 	rm debathena/version
-clean:
 	rm -f host.amd64 host.i386
-	rm -rf debathena/lib
-	rm debathena.preseed
+	rm -f debathena.preseed
+	rm -rf $(LIBEXECDIR)
 
-.PHONY: clean install host kexec debathena.preseed
+clean:
+	rm -rf $(LIBEXECDIR)
+	rm -f debathena.preseed
+	rm -f host.amd64 host.i386
+
+.PHONY: clean install debathena.preseed
