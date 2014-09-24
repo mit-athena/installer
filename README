@@ -1,0 +1,13 @@
+This is the repository for the Debathena installer, including the
+primary command-line installation script, and PXE installation.
+
+This was split from the "scripts" repository at
+fd858268fd08033c74ef9aa533a1e966de38cb15.
+
+Commit IDs referenced in commit messages prior to
+dbf5fbd5a8bab9fe74f12de130563959454b9e65 refer to commits in the scripts
+repository.
+
+This repository was initialized as follows:
+- In a checkout of scripts: git subtree split -P installer -b installer-split
+- In this repository: git pull <scripts checkout> installer-split
