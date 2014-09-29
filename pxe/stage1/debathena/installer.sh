@@ -433,13 +433,13 @@ db_progress INFO $OWNER/downloading
 run rm -rf "$PREFIX/stage2"
 run mkdir "$PREFIX/stage2"
 run wget -q -P "$PREFIX/stage2" "http://debathena.mit.edu/net-install/$distro/$arch/linux"
-db_progress STEP 2
+db_progress STEP 1
 swap downloading thing "stage 2 initrd"
 db_progress INFO $OWNER/downloading
 run wget -q -P "$PREFIX/stage2" "http://debathena.mit.edu/net-install/$distro/$arch/initrd.gz"
-db_progress STEP 3
+db_progress STEP 1
 run kexec -l "$PREFIX/stage2/linux" --append="$kargs" --initrd="$PREFIX/stage2/initrd.gz"
-db_progress STEP 4
+db_progress SET 4
 db_progress STOP
 run kexec -e
 
