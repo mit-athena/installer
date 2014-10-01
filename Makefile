@@ -16,6 +16,6 @@ $(SCRIPT).sh: $(SCRIPT).beta.sh confirm
 	cp -f $< $@
 
 %.sha256sum.txt: %
-	sha256sum $* | cut -d\  -f 1 > $@
+	sha256sum $* > $@
 
 .PHONY: default confirm production beta
