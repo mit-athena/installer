@@ -52,13 +52,13 @@ if test -f /root/pxe-install-flag ; then
   rm -f /root/pxe-install-flag
 fi
 
-have_lsbrelease="$(dpkg-query -W -f '${Status}' lsb-release 2>/dev/null)"
+have_lsbrelease="$(dpkg-query -W -f '${Status}' lsb-release 2>/dev/null)" || :
 if [ "$have_lsbrelease" != "install ok installed" ]; then
   echo "The installer requires the 'lsb-release' package to determine"
   echo "whether or not installation can proceed."
   ask "Is it ok to install this package now? [Y/n] " y
   if [ y = "$answer" ]; then
-    if ! apt-get -qq update && apt-get -qqy install lsb-release; then
+    if ! apt-get -qq update || ! apt-get -qqy install lsb-release; then
 	error "Could not install lsb-release.  Try installing it manually."
 	exit 1
     fi
