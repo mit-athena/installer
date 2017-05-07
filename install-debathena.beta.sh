@@ -72,9 +72,9 @@ aptitude=aptitude
 prerelease=no
 add_apt_repo=python-software-properties
 case $distro in
-  wheezy)
+  wheezy|jessie)
     ;;
-  jessie|stretch)
+  stretch)
     prerelease=yes
     ;;
   precise)
@@ -86,13 +86,13 @@ case $distro in
     aptitude=apt-get
     add_apt_repo=software-properties-common
     ;;
-  xenial)
+  xenial|yakkety|zesty)
     prerelease=yes
     ubuntu=yes
     aptitude=apt-get
     add_apt_repo=software-properties-common
     ;;
-  squeez|lenny|hardy|intrepid|jaunty|karmic|lucid|maverick|natty|oneiric|quantal|raring|saucy|utopic|vivid|wily)
+  squeeze|lenny|hardy|intrepid|jaunty|karmic|lucid|maverick|natty|oneiric|quantal|raring|saucy|utopic|vivid|wily)
     error "The release you are running ($distro) is no longer supported."
     error "Generally, Debathena de-supports releases when they are no longer"
     error "supported by upstream.  If you believe you received this message"
